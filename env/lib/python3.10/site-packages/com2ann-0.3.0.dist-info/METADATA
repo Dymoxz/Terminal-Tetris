@@ -1,0 +1,35 @@
+Metadata-Version: 2.1
+Name: com2ann
+Version: 0.3.0
+Summary: Tool to translate type comments to annotations.
+Home-page: https://github.com/ilevkivskyi/com2ann
+Author: Ivan Levkivskyi
+Author-email: levkivskyi@gmail.com
+License: MIT
+Keywords: typing function annotations type hints type comments variable annotations
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development
+Requires-Python: >=3.8
+License-File: LICENSE
+
+com2ann
+=======
+
+Tool for translation of type comments to type annotations in Python.
+
+This tool requires Python 3.8 to run. But the supported target code version
+is Python 3.4+ (can be specified with ``--python-minor-version``).
+
+Currently, the tool translates function and assignment type comments to
+type annotations.
+
+The philosophy of of the tool is too minimally invasive, and preserve original
+formatting as much as possible. This is why the tool doesn't use un-parse.
+
+
