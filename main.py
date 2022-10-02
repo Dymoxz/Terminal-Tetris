@@ -65,7 +65,8 @@ time_lapsed = 0
 start_time = time.time()
 lastTime = datetime.datetime.now()
 
-rotation = 1
+rotation = 0
+moved = 0
 #------------------------------ Define Functions ------------------------------#
 
 #get the color to print according to a RGB value
@@ -93,12 +94,14 @@ def time_convert(sec):
     mins = mins % 60
 
 def gravity(board, shape, shape2):
+    global moved
     for s in shape:
         aaa = list(board[s[1]])
         aaa[s[0]] = '.'
         board[s[1]] = ''.join(aaa)
     for s in shape:
         absShapes[shapes.index(shape2)][rotation][shape.index(s)][1] += 1
+    moved += 1
 
 def on_press(key):
     global y
@@ -106,6 +109,7 @@ def on_press(key):
     global currentShape  
     global rotation
     global leftBound
+    global moved
     if key == keyboard.Key.esc:
         return False  # stop listener
     try:
@@ -127,12 +131,13 @@ def on_press(key):
                 aaby = -1
                 x -= 1
             else:
-                aaby = 0
-            aabz = 0
+                aabz = 0
         if k == 'down':
             aabz = 1
             y += 1
-    
+        if k =='up':
+            rotation = rotation + 1 if rotation < 3 else 0
+            currentShape = tetreasonimo[rotation]
         for s in currentShape:
             aaa = list(board[s[1]])
             aaa[s[0]] = '.'
@@ -140,11 +145,15 @@ def on_press(key):
         for s in currentShape:
             for ikea in range(0,4):
                 absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][0] += aaby
-                absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][1] += aabz        
+                if k != 'up':
+                    absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][1] += aabz        
+                else:
+                    absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][1] += aabz + moved
         for coord in currentShape:
             aaa = list(board[coord[1]]) 
             aaa[coord[0]] = '0'
             board[coord[1]] = ''.join(aaa)
+        moved = 0
         print_board(board)
 def clear():
     if os.name == 'nt':
@@ -195,11 +204,12 @@ while y < 19 - height + 1:
             board[coord[1]] = ''.join(aaa)
         print_board(board)
         y += 1
-    # try:
-    #     print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-    # except:
-    #     pass
-    print(f'x: {x}   |   y: {y}', end='\r')
+    try:
+        #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
+        print(rotation, moved, end='\r')
+    except:
+        pass
+    #print(f'x: {x}   |   y: {y}', end='\r')
 
     count += 1
     end_time = time.time()
@@ -211,5 +221,5 @@ while y < 19 - height + 1:
 
 clear()
 print_board(board)
-print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
 print()
