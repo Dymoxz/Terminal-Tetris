@@ -127,6 +127,10 @@ def on_press(key):
                 x -= 1
         if k == 'down':
             y += 1
+        if k == 'up':
+            rotation = rotation + 1 if rotation < 3 else 0
+            currentShape = fullShape[rotation]
+            currentABS = copy.deepcopy(currentShape)
         for s in currentABS:
             aaa = list(board[s[1]])
             aaa[s[0]] = '.'
@@ -152,11 +156,10 @@ clear()
 
 
 currentShape = random.choice(shapes)
-currentShape = O
 fullShape = currentShape
 currentShape = currentShape[rotation]
 currentABS = copy.deepcopy(currentShape)
-fullABS = fullShape
+fullABS = copy.deepcopy(fullShape)
 currentColour = colors[shapes.index(fullShape)]
 
 
