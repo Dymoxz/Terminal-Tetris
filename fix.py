@@ -95,10 +95,10 @@ def time_convert(sec):
     mins = mins % 60
 
 def gravity(board, shape):
-    # for coords in shape:
-    #     ABSshapecoords = list(board[coords[1]])
-    #     ABSshapecoords[coords[0]] = '.'
-    #     board[coords[1]] = ''.join(ABSshapecoords)
+    for coords in shape:
+        ABSshapecoords = list(board[coords[1]])
+        ABSshapecoords[coords[0]] = '.'
+        board[coords[1]] = ''.join(ABSshapecoords)
     for s in range(0,len(shape)):
         currentABS[s][1] += 1
 
