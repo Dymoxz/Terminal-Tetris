@@ -179,7 +179,6 @@ while y < 19 - height + 1:
     period = datetime.datetime.now()
     if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0.5:
         gravity(board, currentShape)
-
         lastTime = period
         for coord in currentShape:
             aaa = list(board[coord[1]]) 
