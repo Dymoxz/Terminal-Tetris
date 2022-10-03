@@ -47,8 +47,7 @@ T = [[[0,1],[1,0],[1,1],[2,1]],
 
 #set RGB values for every colour
 colors = [(255, 0, 0), (255, 255, 0), (0, 255, 255), (0, 0, 255), (255, 127, 0), (128, 0, 128), (128, 0, 128)]
-shapes = [S,O,I, J, L, T, Z]#
-absShapes = shapes
+shapes = [S,O,I, J, L, T, Z]
 
 board = ['..........']*20
 
@@ -95,15 +94,15 @@ def time_convert(sec):
     hours = mins // 60
     mins = mins % 60
 
-def gravity(board, shape, shape2):
-    global moved
+def gravity(board, shape):
     for s in shape:
         aaa = list(board[s[1]])
         aaa[s[0]] = '.'
         board[s[1]] = ''.join(aaa)
-    for s in shape:
-        absShapes[shapes.index(shape2)][rotation][shape.index(s)][1] += 1
-    moved += 1
+    for s in range(0,len(shape)):
+        currentABS[s][1] += 1
+
+
 def on_press(key):
     global y
     global x
@@ -118,31 +117,21 @@ def on_press(key):
     except:
         k = key.name  # other keys
     if k in ['left', 'right', 'down', 'up']:
-        absX = 0
-        absY = 0  # keys of interest
         if k == 'right':
             if x < 9 - width + 1:
-                absX = 1
                 x += 1
-            else:
-                absX = 0
-            absY = 0
         if k == 'left':
             if x > 0:
-                absX = -1
                 x -= 1
-            else:
-                absY = 0
         if k == 'down':
-            absY = 1
             y += 1
         for s in currentShape:
             aaa = list(board[s[1]])
             aaa[s[0]] = '.'
             board[s[1]] = ''.join(aaa)
         for s in currentShape:
-                absShapes[shapes.index(tetreasonimo)][rotation][currentShape.index(s)][0] += absX
-                absShapes[shapes.index(tetreasonimo)][rotation][currentShape.index(s)][1] += absY         
+                currentABS[currentShape.index(s)][0] + x
+                currentABS[currentShape.index(s)][1] + y
         for coord in currentShape:
             aaa = list(board[coord[1]]) 
             aaa[coord[0]] = '0'
@@ -161,13 +150,14 @@ clear()
 
 
 currentShape = random.choice(shapes)
-
-tetreasonimo = currentShape
+fullShape = currentShape
 currentShape = currentShape[rotation]
-currentColour = colors[shapes.index(tetreasonimo)]
+currentABS = currentShape
+fullABS = fullShape
+currentColour = colors[shapes.index(fullShape)]
 
 
-print_board
+
 leftBound = min([item[0] for item in currentShape])
 rightBound = max([item[0] for item in currentShape])
 
@@ -188,7 +178,7 @@ while y < 19 - height + 1:
     start = time.time()
     period = datetime.datetime.now()
     if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0.5:
-        gravity(board, currentShape, tetreasonimo)
+        gravity(board, currentShape)
 
         lastTime = period
         for coord in currentShape:
@@ -199,7 +189,8 @@ while y < 19 - height + 1:
         y += 1
     try:
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
-        print(x, y, end='\r')
+        # print(x, y, end='\r')
+        print(currentABS, end='\r')
     except:
         pass
     #print(f'x: {x}   |   y: {y}', end='\r')
