@@ -20,10 +20,10 @@ I = [[[0,1],[1,1],[2,1],[3,1]],
     [[0,2],[1,2],[2,2],[3,2]],
     [[1,0],[1,1],[1,2],[1,3]]]
 
-O = [[[1,0],[2,0],[1,1],[2,1]],
-    [[1,0],[2,0],[1,1],[2,1]],
-    [[1,0],[2,0],[1,1],[2,1]],
-    [[1,0],[2,0],[1,1],[2,1]]]
+O = [[[0,0],[1,0],[0,1],[1,1]],
+    [[0,0],[1,0],[0,1],[1,1]],
+    [[0,0],[1,0],[0,1],[1,1]],
+    [[0,0],[1,0],[0,1],[1,1]]]
 
 L = [[[0,1],[2,1],[1,1],[2,0]],
     [[1,0],[1,1],[1,2],[2,2]],
@@ -88,6 +88,8 @@ def print_board(board):
         print()
     print()
 
+
+
 def time_convert(sec):
     mins = sec // 60
     sec = sec % 60
@@ -121,21 +123,21 @@ def on_press(key):
             if x < 9 - width + 1:
                 x += 1
         if k == 'left':
-            if x > 0:
+            if x > 0 :
                 x -= 1
         if k == 'down':
             y += 1
-        for s in currentShape:
+        for s in currentABS:
             aaa = list(board[s[1]])
             aaa[s[0]] = '.'
             board[s[1]] = ''.join(aaa)
-        for s in currentShape:
-                currentABS[currentShape.index(s)][0] + x
-                currentABS[currentShape.index(s)][1] + y
-        for coord in currentShape:
-            aaa = list(board[coord[1]]) 
-            aaa[coord[0]] = '0'
-            board[coord[1]] = ''.join(aaa)
+        for s in range(0,4):
+                currentABS[s][0] = currentShape[s][0] + x
+                currentABS[s][1] = currentShape[s][1] + y
+        for coord in currentABS:
+            ABSshapecoords = list(board[coord[1]]) 
+            ABSshapecoords[coord[0]] = '0'
+            board[coord[1]] = ''.join(ABSshapecoords)
         print_board(board)
 def clear():
     if os.name == 'nt':
@@ -150,6 +152,7 @@ clear()
 
 
 currentShape = random.choice(shapes)
+currentShape = O
 fullShape = currentShape
 currentShape = currentShape[rotation]
 currentABS = copy.deepcopy(currentShape)
@@ -189,7 +192,7 @@ while y < 19 - height + 1:
     try:
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
         # print(x, y, end='\r')
-        print(currentABS, end='\r')
+        print(currentABS, f'x= {x}, y= {y}', end='\r')
     except:
         pass
     #print(f'x: {x}   |   y: {y}', end='\r')
