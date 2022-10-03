@@ -5,6 +5,7 @@ from re import X
 import time
 import datetime
 from pynput import keyboard
+from yaml import YAMLError
 #------------------------------ Initialization ------------------------------#
 
 
@@ -24,7 +25,7 @@ O = [[[1,0],[2,0],[1,1],[2,1]],
     [[1,0],[2,0],[1,1],[2,1]],
     [[1,0],[2,0],[1,1],[2,1]]]
 
-L = [[[0,1],[0,2],[2,1],[2,0]],
+L = [[[0,1],[2,1],[1,1],[2,0]],
     [[1,0],[1,1],[1,2],[2,2]],
     [[0,1],[0,2],[1,1],[2,1]],
     [[0,0],[1,0],[1,1],[1,2]]]
@@ -45,7 +46,7 @@ T = [[[0,1],[1,0],[1,1],[2,1]],
     [[1,0],[0,1],[1,1],[1,2]]]
 
 #set RGB values for every colour
-colors = [(255, 0, 0), (255, 255, 0), (0, 255, 255), (255, 127, 0), (0, 0, 255), (128, 0, 128), (128, 0, 128)]
+colors = [(255, 0, 0), (255, 255, 0), (0, 255, 255), (0, 0, 255), (255, 127, 0), (128, 0, 128), (128, 0, 128)]
 shapes = [S,O,I, J, L, T, Z]#
 absShapes = shapes
 
@@ -66,9 +67,10 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 
 rotation = 0
-moved = 0
+
 #------------------------------ Define Functions ------------------------------#
 
+#set RGB values for every colour
 #get the color to print according to a RGB value
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
@@ -102,7 +104,6 @@ def gravity(board, shape, shape2):
     for s in shape:
         absShapes[shapes.index(shape2)][rotation][shape.index(s)][1] += 1
     moved += 1
-
 def on_press(key):
     global y
     global x
@@ -117,43 +118,35 @@ def on_press(key):
     except:
         k = key.name  # other keys
     if k in ['left', 'right', 'down', 'up']:
-        aaby = 0
-        aabz = 0  # keys of interest
+        absX = 0
+        absY = 0  # keys of interest
         if k == 'right':
             if x < 9 - width + 1:
-                aaby = 1
+                absX = 1
                 x += 1
             else:
-                aaby = 0
-            aabz = 0
+                absX = 0
+            absY = 0
         if k == 'left':
             if x > 0:
-                aaby = -1
+                absX = -1
                 x -= 1
             else:
-                aabz = 0
+                absY = 0
         if k == 'down':
-            aabz = 1
+            absY = 1
             y += 1
-        if k =='up':
-            rotation = rotation + 1 if rotation < 3 else 0
-            currentShape = tetreasonimo[rotation]
         for s in currentShape:
             aaa = list(board[s[1]])
             aaa[s[0]] = '.'
             board[s[1]] = ''.join(aaa)
         for s in currentShape:
-            for ikea in range(0,4):
-                absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][0] += aaby
-                if k != 'up':
-                    absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][1] += aabz        
-                else:
-                    absShapes[shapes.index(tetreasonimo)][ikea][currentShape.index(s)][1] += aabz + moved
+                absShapes[shapes.index(tetreasonimo)][rotation][currentShape.index(s)][0] += absX
+                absShapes[shapes.index(tetreasonimo)][rotation][currentShape.index(s)][1] += absY         
         for coord in currentShape:
             aaa = list(board[coord[1]]) 
             aaa[coord[0]] = '0'
             board[coord[1]] = ''.join(aaa)
-        moved = 0
         print_board(board)
 def clear():
     if os.name == 'nt':
@@ -168,13 +161,13 @@ clear()
 
 
 currentShape = random.choice(shapes)
+
 tetreasonimo = currentShape
 currentShape = currentShape[rotation]
 currentColour = colors[shapes.index(tetreasonimo)]
 
 
-
-
+print_board
 leftBound = min([item[0] for item in currentShape])
 rightBound = max([item[0] for item in currentShape])
 
@@ -206,7 +199,7 @@ while y < 19 - height + 1:
         y += 1
     try:
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
-        print(rotation, moved, end='\r')
+        print(x, y, end='\r')
     except:
         pass
     #print(f'x: {x}   |   y: {y}', end='\r')
@@ -218,8 +211,9 @@ while y < 19 - height + 1:
     time.sleep(max(1./60 - (time.time() - start), 0))
 
 
-
+listener.stop()
 clear()
 print_board(board)
-print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
+print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}')
+print(f'X: {x}   |   Y: {y}')
 print()
