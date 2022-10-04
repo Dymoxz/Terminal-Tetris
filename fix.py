@@ -1,4 +1,3 @@
-from operator import le
 from os import system
 import os
 import random
@@ -64,6 +63,7 @@ moved = False
 
 x = 0
 abx = 0
+aby = 0
 y = 0
 
 time_lapsed = 0
@@ -118,6 +118,7 @@ def on_press(key):
     global rotation
     global leftBound
     global moved
+    global aby
     if key == keyboard.Key.esc:
         return False  # stop listener
     try:
@@ -132,7 +133,7 @@ def on_press(key):
             if x + abx > 0:
                 x -= 1
         if k == 'down':
-            if y < 20 - height + l:
+            if y + aby < 20 - height:
                 y += 1
         if k == 'up':
             pptation = copy.deepcopy(rotation)
@@ -149,7 +150,8 @@ def on_press(key):
                 rotation = rotation + 1 if rotation < 3 else 0
                 currentShape = fullShape[pptation]
                 curLeft = min([item[0] for item in currentShape])
-                abx = curLeft
+                abx = curLeft 
+                aby = min([item[1] for item in currentShape])
                 getDimenstions()
             else:
                 currentShape = fullShape[rotation]
@@ -177,6 +179,7 @@ def getDimenstions():
     global height
     global rightBound
     global leftBound
+    global topBound
     leftBound = min([item[0] for item in currentShape])
     rightBound = max([item[0] for item in currentShape])
     topBound = min([item[1] for item in currentShape])
@@ -197,19 +200,15 @@ currentColour = colors[shapes.index(fullShape)]
 
 getDimenstions()
 
-if height == 1:
-    l = 0
-else:
-    l = 1
-
 print_board(board)
 
 x = leftBound
+aby = topBound
 
 listener = keyboard.Listener(on_press=on_press)
 listener.start()  # start to listen on a separate thread
 
-while y < 19 - height + l:
+while y + aby < 20 - height:
     start = time.time()
     period = datetime.datetime.now()
     if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0.5:
@@ -223,8 +222,8 @@ while y < 19 - height + l:
         y += 1
     try:
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
-        #print(f'width: {width}  |   height: {height}    |   x: {x}  |   y: {y}', end='\r')
-        print(f'currentShape: {currentShape}    |   currentABS: {currentABS}    |   rotation: {rotation}', end='\r')
+        print(f'width: {width}  |   height: {height}    |   x: {x + abx}  |   y: {y + aby}', end='\r')
+        #print(f'currentShape: {currentShape}    |   currentABS: {currentABS}    |   rotation: {rotation}', end='\r')
         #print(x + abx, y, end='\r')
         #print(currentABS, f'x= {x}, y= {y}', end='\r')
     except:
@@ -242,6 +241,6 @@ listener.stop()
 clear()
 print_board(board)
 print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}')
-print(f'X: {x + abx}   |   Y: {y}')
+print(f'X: {x + abx}   |   Y: {y + aby}')
 print(f'rotation: {rotation}')
 print()
