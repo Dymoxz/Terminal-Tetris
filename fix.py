@@ -73,7 +73,7 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 
 rotation = 0
-
+absList = []
 #------------------------------ Define Functions ------------------------------#
 
 #set RGB values for every colour
@@ -106,7 +106,6 @@ def time_convert(sec):
 def gravity(board, shape):
     #shape = currentShape
     for coords in shape:
-        #---!!---#
         ABSshapecoords = list(board[coords[1]])
         ABSshapecoords[coords[0]] = background
         board[coords[1]] = ''.join(ABSshapecoords)
@@ -167,8 +166,9 @@ def on_press(key):
             aaa[s[0]] = background
             board[s[1]] = ''.join(aaa)
         for s in range(0,4):
-                currentABS[s][0] = currentShape[s][0] + x
-                currentABS[s][1] = currentShape[s][1] + y
+            currentABS[s][0] = currentShape[s][0] + x
+            currentABS[s][1] = currentShape[s][1] + y
+
         # for every coord in the shape set it to the icon in this case ⯀
         for coord in currentABS:
             ABSshapecoords = list(board[coord[1]]) 
@@ -247,18 +247,26 @@ while True:
     while y + aby < 20 - height:
         start = time.time()
         period = datetime.datetime.now()
-        if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0.5:
+        if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0:
             #do the gravity, boom, b-b-boom b-boom b-boom!
-            gravity(board, currentABS)
-            lastTime = period
-            for coord in currentABS:
-                aaa = list(board[coord[1]]) 
-                aaa[coord[0]] = shapeIcon
-                board[coord[1]] = ''.join(aaa)
-            print_board(board)
-            y += 1
+            collisions = 0
+            for xy in currentABS:
+                if [xy[0],xy[1] + 1] in absList:
+                    collisions += 1
+            if collisions == 0:
+                gravity(board, currentABS)
+                lastTime = period
+                for coord in currentABS:
+                    aaa = list(board[coord[1]]) 
+                    aaa[coord[0]] = shapeIcon
+                    board[coord[1]] = ''.join(aaa)
+                print_board(board)
+                y += 1
+            else:
+                break
         try:
-            print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
+            print(currentABS, collisions, end='\r')
+            #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
             #print(f'width: {width}  |   height: {height}    |   x: {x + abx}  |   y: {y + aby}', end='\r')
             #print(colour_list, shape_list, end='\r')
             #print(f'currentShape: {currentShape}    |   currentABS: {currentABS}    |   rotation: {rotation}', end='\r')
@@ -281,6 +289,7 @@ while True:
         #limit to 60 fps instead of 20.000 fps
         time.sleep(max(1./60 - (time.time() - start), 0))
 
+    absList.extend(currentABS)
 
 
 
