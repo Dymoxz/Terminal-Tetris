@@ -131,12 +131,12 @@ def on_press(key):
 
 #------------------------------ Main ------------------------------#
 
-
-
+listener = keyboard.Listener(on_press=on_press)
+listener.start() 
 
 while main:
-
-    currentShape = random.choice([S, I, O, L, J, Z, T])
+    shapeList = copy.deepcopy([S, I, O, L, J, Z, T])
+    currentShape = random.choice(shapeList)
     currentRotation = currentShape[0]
 
     #------------ Base Coords for Shape ------------#
@@ -154,10 +154,6 @@ while main:
     clear()
     #print board with current shape
     print_board(currentRotation, board)
-    listener = keyboard.Listener(on_press=on_press)
-    listener.start() 
-
-
 
     while y < 20 - height - 1:
         start = time.time()
@@ -171,7 +167,7 @@ while main:
             print_board(currentRotation, board)
             lastTime = period
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        print(x,y, '  ', width + 1, height + 1, end='\r')
+        print(x,y, '  ', width + 1, height + 1, currentShape.index(currentRotation), end='\r')
 
         count += 1
         end_time = time.time()  
