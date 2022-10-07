@@ -53,12 +53,14 @@ RESET = '\033[0m'
 main = True
 board_coords = []
 ghost_coords = []
+
+
 #Variables needed for Time + FPS
 start_time = time.time()
 lastTime = datetime.datetime.now()
 time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
-
+framelimit = 15
 
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
@@ -76,6 +78,7 @@ def print_board(shape_coords, boarding, ghost):
         llist[xb[0]] = ghostPiece
         local_board[xb[1]] = ''.join(llist)
     
+    clear()
     for y in local_board:
         for x in y:
             if x == shapeIcon:
@@ -147,7 +150,7 @@ def on_press(key):
             y = min(currentRotation, key=lambda ya: ya[1])[1]
             width = max(currentRotation, key=lambda xa: xa[0])[0] - x
             height = max(currentRotation, key=lambda ya: ya[1])[1] - y
-        clear()
+         
         print_board(currentRotation + board_coords, board, ghost_coords)
 
 #------------------------------ Main ------------------------------#
@@ -176,13 +179,17 @@ while main:
     height = max(currentRotation, key=lambda ya: ya[1])[1]
     #----------------------------------------------#
 
-    clear()
-    #print board with current shape
+    
     print_board(currentRotation + board_coords, board, ghost_coords)
     collisions = 0
+
+
+    #------------ Every Piece ------------#
     while y < 20 - height - 1 and collisions == 0:
         start = time.time()
         period = datetime.datetime.now()
+
+        #------------ Every x seconds ------------#
         if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 1:
             collisions = 0
             for coord in currentRotation:
@@ -193,26 +200,37 @@ while main:
                 for rot in currentShape:
                     for coord in rot:
                         coord[1] += 1
-            clear()
+            
             print_board(currentRotation + board_coords, board, ghost_coords)
             lastTime = period
+        #------------------------------------#
+        
         print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        #print(x,y, '  ', width + 1, height + 1, currentShape.index(currentRotation), end='\r')
-        print(ghost_coords, end='\r')
+
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
         time_convert(time_lapsed) 
 
-        time.sleep(max(1./60 - (time.time() - start), 0))
+    
+        time.sleep(max(1./framelimit - (time.time() - start), 0))
+
     board_coords.extend(currentRotation)
 
+    #------------ Clear Lines ------------#
     y_list = [s[1] for s in board_coords]
+    for y in range(0,20):
+        if y_list.count(y) == 10:
+            board_coords = [s for s in board_coords if s[1] != y]
+            for s in board_coords:
+                if s[1] < y:
+                    s[1] += 1
+    #------------------------------------#
 
 
-clear()
+
+
 print_board(currentRotation + board_coords, board, ghost_coords)
-
 print(currentRotation)
 print(x,y)
 print(width + 1, height + 1)
