@@ -46,6 +46,7 @@ T = [[[0,1],[1,0],[1,1],[2,1]],
 
 background = '.'
 shapeIcon = '⯀'
+ghostPiece = '□'
 
 board = [background*10]*20
 RESET = '\033[0m'
