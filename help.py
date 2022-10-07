@@ -82,7 +82,8 @@ speed_dict = {
     28: 0.666, 29: 0.333,
 }
 
-speed_seconds = speed_dict[0] / 20
+current_level = 0
+speed_seconds = speed_dict[current_level] / 20
 line_clear_count = 0
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
