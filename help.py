@@ -52,6 +52,7 @@ board = [background*10]*20
 RESET = '\033[0m'
 main = True
 board_coords = []
+ghost_coords = []
 #Variables needed for Time + FPS
 start_time = time.time()
 lastTime = datetime.datetime.now()
@@ -63,17 +64,24 @@ count = 0
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
 
-def print_board(shape_coords, boarding):
+def print_board(shape_coords, boarding, ghost):
     local_board = copy.deepcopy(boarding)
     for xy in shape_coords:
         llist = list(local_board[xy[1]])
         llist[xy[0]] = shapeIcon
         local_board[xy[1]] = ''.join(llist)
     
+    for xb in ghost:
+        llist = list(local_board[xb[1]])
+        llist[xb[0]] = ghostPiece
+        local_board[xb[1]] = ''.join(llist)
+    
     for y in local_board:
         for x in y:
             if x == shapeIcon:
                 print(get_color_escape(63, 127, 176) + x + RESET + ' ', end='')
+            elif x == ghostPiece:
+                print(get_color_escape(80, 80, 80) + x + RESET + ' ', end='')
             else:
                 print(x, end=' ')
         print()
@@ -89,7 +97,6 @@ def time_convert(sec):
     sec = sec % 60
     hours = mins // 60
     mins = mins % 60
-
 
 def on_press(key):
     global x, y, width, height, collisions
@@ -141,7 +148,7 @@ def on_press(key):
             width = max(currentRotation, key=lambda xa: xa[0])[0] - x
             height = max(currentRotation, key=lambda ya: ya[1])[1] - y
         clear()
-        print_board(currentRotation + board_coords, board)
+        print_board(currentRotation + board_coords, board, ghost_coords)
 
 #------------------------------ Main ------------------------------#
 
@@ -151,13 +158,13 @@ listener.start()
 while main:
     shapeList = copy.deepcopy([S, I, O, L, J, Z, T])
     currentShape = random.choice(shapeList)
-    currentRotation = currentShape[2]
+    currentRotation = currentShape[0]
+
 
     #------------ Base Coords for Shape ------------#
     y = min(currentRotation, key=lambda ya: ya[1])[1]
     x = min(currentRotation, key=lambda xa: xa[0])[0]
 
-    
     for coord in currentRotation:
         coord[0] -= x
         coord[1] -= y
@@ -171,7 +178,7 @@ while main:
 
     clear()
     #print board with current shape
-    print_board(currentRotation + board_coords, board)
+    print_board(currentRotation + board_coords, board, ghost_coords)
     collisions = 0
     while y < 20 - height - 1 and collisions == 0:
         start = time.time()
@@ -187,11 +194,11 @@ while main:
                     for coord in rot:
                         coord[1] += 1
             clear()
-            print_board(currentRotation + board_coords, board)
+            print_board(currentRotation + board_coords, board, ghost_coords)
             lastTime = period
-        #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        print(x,y, '  ', width + 1, height + 1, currentShape.index(currentRotation), end='\r')
-
+        print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+        #print(x,y, '  ', width + 1, height + 1, currentShape.index(currentRotation), end='\r')
+        print(ghost_coords, end='\r')
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
@@ -200,8 +207,11 @@ while main:
         time.sleep(max(1./60 - (time.time() - start), 0))
     board_coords.extend(currentRotation)
 
+    y_list = [s[1] for s in board_coords]
+
+
 clear()
-print_board(currentRotation + board_coords, board)
+print_board(currentRotation + board_coords, board, ghost_coords)
 
 print(currentRotation)
 print(x,y)
