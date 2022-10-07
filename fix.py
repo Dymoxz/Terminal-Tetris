@@ -266,7 +266,7 @@ while True:
                 break
         try:
             print(currentABS, collisions, end='\r')
-            #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
+            print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.   |   Rotation: {rotation}', end='\r')
             #print(f'width: {width}  |   height: {height}    |   x: {x + abx}  |   y: {y + aby}', end='\r')
             #print(colour_list, shape_list, end='\r')
             #print(f'currentShape: {currentShape}    |   currentABS: {currentABS}    |   rotation: {rotation}', end='\r')

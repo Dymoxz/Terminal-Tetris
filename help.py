@@ -49,13 +49,18 @@ shapeIcon = '⯀'
 
 board = [background*10]*20
 RESET = '\033[0m'
+main = True
 
+#Variables needed for Time + FPS
 start_time = time.time()
 lastTime = datetime.datetime.now()
+time_lapsed = 0.00000000000000000000000000000000000000000000001
+count = 0
 
+
+#------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
-
 
 def print_board(shape_coords, boarding):
     local_board = copy.deepcopy(boarding)
@@ -78,38 +83,104 @@ def clear():
     else:
         _ = system('clear')
 
-clear()
-print_board([], board)
+def time_convert(sec):
+    mins = sec // 60
+    sec = sec % 60
+    hours = mins // 60
+    mins = mins % 60
+
+
+def on_press(key):
+    global x, y, width, height
+    global currentRotation, currentShape
+    if key == keyboard.Key.esc:
+        main = False
+        return False  # stop listener
+    try:
+        k = key.char  # single-char keys
+    except:
+        k = key.name  # other keys
+    
+    if k in ['left', 'right', 'down', 'up']:
+        if k == 'left':
+            if x > 0:
+                x -= 1
+                for rot in currentShape:
+                    for xy in rot:
+                        xy[0] -= 1
+        elif k == 'right':
+            if x < 9 - width:
+                x += 1
+                for rot in currentShape:
+                    for xy in rot:
+                        xy[0] += 1
+        elif k == 'down':
+            if y < 19 - height:
+                y += 1
+                for rot in currentShape:
+                    for xy in rot:
+                        xy[1] += 1
+        elif k == 'up':
+            currentRotation = currentShape[(currentShape.index(currentRotation) + 1) % 4]
+        clear()
+        print_board(currentRotation, board)
 
 #------------------------------ Main ------------------------------#
 
-currentShape = random.choice([S, I, O, L, J, Z, T])
-# currentShape = I
-currentRotation = currentShape[1]
-
-real_y = min([xy[1] for xy in currentRotation])
-real_x = min([xy[0] for xy in currentRotation])
-
-y = 0
-x = 0
-
-height = max([xy[1] for xy in currentRotation]) - real_y + 1
-width = max([xy[0] for xy in currentRotation]) - real_x + 1
-
-absolute_rotation = [[xy[0] + x, xy[1] + y] for xy in currentRotation]
 
 
-while real_y < 20 - height:
-    start = time.time()
-    period = datetime.datetime.now()
-    if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 0.2:
-        lastTime = period
-        clear()
-        print_board(absolute_rotation, board)
-        print(f'x: {x}, y: {y}, h: {height}, w: {width}, r_x: {real_x}, r_y: {real_y}', end='\r')
-        real_y += 1
-    absolute_rotation = [[xy[0] + x, xy[1] + real_y] for xy in currentRotation]
 
-print()
-print(f'x: {x}, y: {y}, h: {height}, w: {width}, r_x: {real_x}, r_y: {real_y}')
-print()
+while main:
+
+    currentShape = random.choice([S, I, O, L, J, Z, T])
+    currentRotation = currentShape[0]
+
+    #------------ Base Coords for Shape ------------#
+    y = min(currentRotation, key=lambda ya: ya[1])[1]
+    x = min(currentRotation, key=lambda xa: xa[0])[0]
+
+    for coord in currentRotation:
+        coord[0] -= x
+        coord[1] -= y
+
+    width = max(currentRotation, key=lambda xa: xa[0])[0]
+    height = max(currentRotation, key=lambda ya: ya[1])[1]
+    #----------------------------------------------#
+
+    clear()
+    #print board with current shape
+    print_board(currentRotation, board)
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start() 
+
+
+
+    while y < 20 - height - 1:
+        start = time.time()
+        period = datetime.datetime.now()
+        if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 1:
+            y += 1
+            for rot in currentShape:
+                for coord in rot:
+                    coord[1] += 1
+            clear()
+            print_board(currentRotation, board)
+            lastTime = period
+        #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+        print(x,y, end='\r')
+
+        count += 1
+        end_time = time.time()  
+        time_lapsed = end_time - start_time
+        time_convert(time_lapsed) 
+
+        time.sleep(max(1./60 - (time.time() - start), 0))
+
+
+clear()
+print_board(currentRotation, board)
+
+print(currentRotation)
+print(x,y)
+print(width + 1, height + 1)
+
