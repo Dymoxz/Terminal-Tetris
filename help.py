@@ -82,6 +82,23 @@ speed_dict = {
     28: 0.666, 29: 0.333,
 }
 
+speed_dict = {
+    0: {
+        'time': 15.974,
+        'lines': 10,
+    },
+    1: {
+        'time': 14.310,
+        'lines': 20,
+    },
+    2: {
+        'time': 12.646,
+        'lines': 30,
+    },
+}
+
+
+
 current_level = 0
 speed_seconds = speed_dict[current_level] / 20
 line_clear_count = 0
