@@ -64,6 +64,26 @@ time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
 framelimit = 30
 
+speed_dict = {
+    0: 15.974, 1: 14.310,
+    2: 12.646, 3: 10.982,
+    4: 9.318, 5: 7.654,
+    6: 5.990, 7: 4.326,
+    8: 2.662, 9: 1.997,
+    10: 1.664, 11: 1.664,
+    12: 1.664, 13: 1.331,
+    14: 1.331, 15: 1.331,
+    16: 0.998, 17: 0.998,
+    18: 0.998, 19: 0.666,
+    20: 0.666, 21: 0.666,
+    22: 0.666, 23: 0.666,
+    24: 0.666, 25: 0.666,
+    26: 0.666, 27: 0.666,
+    28: 0.666, 29: 0.333,
+}
+
+speed_seconds = speed_dict[0] / 20
+line_clear_count = 0
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
@@ -199,7 +219,7 @@ while main:
         period = datetime.datetime.now()
 
         #------------ Every x seconds ------------#
-        if period.second % 1 == 0 and (period - lastTime).total_seconds() >= 1:
+        if period.second % 1 == 0 and (period - lastTime).total_seconds() >= speed_seconds:
             collisions = 0
             for coord in currentRotation:
                 if [coord[0],coord[1] + 1] in board_coords:
@@ -231,6 +251,7 @@ while main:
     y_list = [s[1] for s in board_coords]
     for y in range(0,20):
         if y_list.count(y) == 10:
+            line_clear_count += 1
             board_coords = [s for s in board_coords if s[1] != y]
             for s in board_coords:
                 if s[1] < y:
