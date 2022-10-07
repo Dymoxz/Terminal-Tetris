@@ -122,6 +122,10 @@ def on_press(key):
                         xy[1] += 1
         elif k == 'up':
             currentRotation = currentShape[(currentShape.index(currentRotation) + 1) % 4]
+            x = min(currentRotation, key=lambda xa: xa[0])[0]
+            y = min(currentRotation, key=lambda ya: ya[1])[1]
+            width = max(currentRotation, key=lambda xa: xa[0])[0] - x
+            height = max(currentRotation, key=lambda ya: ya[1])[1] - y
         clear()
         print_board(currentRotation, board)
 
@@ -167,7 +171,7 @@ while main:
             print_board(currentRotation, board)
             lastTime = period
         #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        print(x,y, end='\r')
+        print(x,y, '  ', width + 1, height + 1, end='\r')
 
         count += 1
         end_time = time.time()  
