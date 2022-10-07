@@ -44,9 +44,11 @@ T = [[[0,1],[1,0],[1,1],[2,1]],
     [[0,1],[1,1],[1,2],[2,1]],
     [[1,0],[0,1],[1,1],[1,2]]]
 
+#------------ Visuals ------------#
 background = '.'
 shapeIcon = '⯀'
 ghostPiece = '□'
+#---------------------------------#
 
 board = [background*10]*20
 RESET = '\033[0m'
@@ -60,7 +62,7 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
-framelimit = 15
+framelimit = 30
 
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
@@ -104,38 +106,39 @@ def time_convert(sec):
 def on_press(key):
     global x, y, width, height, collisions
     global currentRotation, currentShape
+    global main
     side_collisions = 0
     if key == keyboard.Key.esc:
-        main = False
         return False  # stop listener
     try:
         k = key.char  # single-char keys
     except:
         k = key.name  # other keys
     
-    if k in ['left', 'right', 'down', 'up']:
-        if k == 'left':
-            if x > 0 and side_collisions == 0:
-                for coord in currentRotation:
-                    if [coord[0] - 1,coord[1]] in board_coords:
-                        side_collisions += 1
-                if side_collisions == 0:
-                    x -= 1
-                    for rot in currentShape:
-                        for xy in rot:
-                            xy[0] -= 1
-        elif k == 'right':
-            if x < 9 - width and side_collisions == 0:
-                for coord in currentRotation:
-                    if [coord[0] + 1,coord[1]] in board_coords:
-                        side_collisions += 1
-                if side_collisions == 0:
-                    x += 1
-                    for rot in currentShape:
-                        for xy in rot:
-                            xy[0] += 1
-        elif k == 'down':
-            if y < 19 - height and collisions == 0:
+    if k in ['left', 'right', 'down', 'up', 'space']:
+        left_cond = x > 0 and side_collisions == 0
+        if k == 'left' and left_cond:
+            for coord in currentRotation:
+                if [coord[0] - 1,coord[1]] in board_coords:
+                    side_collisions += 1
+            if side_collisions == 0:
+                x -= 1
+                for rot in currentShape:
+                    for xy in rot:
+                        xy[0] -= 1
+        
+        right_cond = x < 9 - width and side_collisions == 0
+        if k == 'right' and right_cond:
+            for coord in currentRotation:
+                if [coord[0] + 1,coord[1]] in board_coords:
+                    side_collisions += 1
+            if side_collisions == 0:
+                x += 1
+                for rot in currentShape:
+                    for xy in rot:
+                        xy[0] += 1
+        down_cond = y < 19 - height and collisions == 0            
+        if k == 'down' and down_cond:
                 for coord in currentRotation:
                     if [coord[0],coord[1] + 1] in board_coords:
                         collisions += 1
@@ -144,13 +147,18 @@ def on_press(key):
                     for rot in currentShape:
                         for xy in rot:
                             xy[1] += 1
-        elif k == 'up':
+        if k == 'up':
             currentRotation = currentShape[(currentShape.index(currentRotation) + 1) % 4]
+
             x = min(currentRotation, key=lambda xa: xa[0])[0]
             y = min(currentRotation, key=lambda ya: ya[1])[1]
+
             width = max(currentRotation, key=lambda xa: xa[0])[0] - x
             height = max(currentRotation, key=lambda ya: ya[1])[1] - y
-         
+        
+        if k == 'space':
+            pass
+
         print_board(currentRotation + board_coords, board, ghost_coords)
 
 #------------------------------ Main ------------------------------#
@@ -159,6 +167,7 @@ listener = keyboard.Listener(on_press=on_press)
 listener.start() 
 
 while main:
+
     shapeList = copy.deepcopy([S, I, O, L, J, Z, T])
     currentShape = random.choice(shapeList)
     currentRotation = currentShape[0]
@@ -212,10 +221,11 @@ while main:
         time_lapsed = end_time - start_time
         time_convert(time_lapsed) 
 
-    
         time.sleep(max(1./framelimit - (time.time() - start), 0))
 
     board_coords.extend(currentRotation)
+    #------------------------------------#
+
 
     #------------ Clear Lines ------------#
     y_list = [s[1] for s in board_coords]
@@ -226,7 +236,6 @@ while main:
                 if s[1] < y:
                     s[1] += 1
     #------------------------------------#
-
 
 
 
