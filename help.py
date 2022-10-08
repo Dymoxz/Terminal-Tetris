@@ -62,7 +62,7 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
-framelimit = 30
+framelimit = 60
 
 speed_dict = {
     0: 15.974, 
@@ -241,20 +241,35 @@ def on_press(key):
                         for xy in rot:
                             xy[1] += 1
         if k == 'up':
-            currentRotation = currentShape[(currentShape.index(currentRotation) + 1) % 4]
+            pepe = currentShape[(currentShape.index(currentRotation) + 1) % 4]
+            rotation_cond = max([i[0] for i in pepe]) < 10 and min([i[0] for i in pepe]) >= 0 and max([i[1] for i in pepe]) < 20 and min([i[1] for i in pepe]) >= 0
+            if pepe not in board_coords and rotation_cond:
+                currentRotation = currentShape[(currentShape.index(currentRotation) + 1) % 4]
 
             x = min(currentRotation, key=lambda xa: xa[0])[0]
             y = min(currentRotation, key=lambda ya: ya[1])[1]
 
             width = max(currentRotation, key=lambda xa: xa[0])[0] - x
             height = max(currentRotation, key=lambda ya: ya[1])[1] - y
-        
+#get lowest y in board_coords of all x_coords of current rotation
+#get lowest y of those y_coords
+#set y of current rotation to that y_coord - height of current rotation
         if k == 'space':
-            pass
-
+            if board_coords != []:
+                totList = []
+                for (a, b) in currentRotation:
+                    bList = []
+                    for (c, d) in board_coords:
+                        if a == c:
+                            bList.append(d)
+                    totList.append(min(bList))
+                y = min(totList) - height
+            else:
+                pass
         print_board(currentRotation + board_coords, board, ghost_coords)
 
 #------------------------------ Main ------------------------------#
+
 
 listener = keyboard.Listener(on_press=on_press)
 listener.start() 
@@ -307,9 +322,9 @@ while main:
             lastTime = period
         #------------------------------------#
         
-        # print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        
-        print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
+        #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+        print(f'x: {x}  |   y: {y}   |   width: {width}   |   height: {height}', end='\r')
+        #print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
