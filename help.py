@@ -65,21 +65,36 @@ count = 0
 framelimit = 30
 
 speed_dict = {
-    0: 15.974, 1: 14.310,
-    2: 12.646, 3: 10.982,
-    4: 9.318, 5: 7.654,
-    6: 5.990, 7: 4.326,
-    8: 2.662, 9: 1.997,
-    10: 1.664, 11: 1.664,
-    12: 1.664, 13: 1.331,
-    14: 1.331, 15: 1.331,
-    16: 0.998, 17: 0.998,
-    18: 0.998, 19: 0.666,
-    20: 0.666, 21: 0.666,
-    22: 0.666, 23: 0.666,
-    24: 0.666, 25: 0.666,
-    26: 0.666, 27: 0.666,
-    28: 0.666, 29: 0.333,
+    0: 15.974, 
+    1: 14.310,
+    2: 12.646, 
+    3: 10.982,
+    4: 9.318, 
+    5: 7.654,
+    6: 5.990, 
+    7: 4.326,
+    8: 2.662, 
+    9: 1.997,
+    10: 1.664, 
+    11: 1.664,
+    12: 1.664, 
+    13: 1.331,
+    14: 1.331, 
+    15: 1.331,
+    16: 0.998, 
+    17: 0.998,
+    18: 0.998, 
+    19: 0.666,
+    20: 0.666, 
+    21: 0.666,
+    22: 0.666, 
+    23: 0.666,
+    24: 0.666, 
+    25: 0.666,
+    26: 0.666,
+    27: 0.666,
+    28: 0.666, 
+    29: 0.333,
 }
 
 speed_dict = {
@@ -95,13 +110,53 @@ speed_dict = {
         'time': 12.646,
         'lines': 30,
     },
+    3: {
+        'time': 10.982,
+        'lines': 40,
+    },
+    4: {
+        'time':  9.318,
+        'lines': 50,
+    },
+    5: {
+        'time': 7.654,
+        'lines': 60,
+    },
+    6: {
+        'time': 5.990,
+        'lines': 70,
+    },
+    7: {
+        'time': 4.326,
+        'lines': 80,
+    },
+    8: {
+        'time': 2.662,
+        'lines': 90,
+    },
+    9: {
+        'time': 1.997,
+        'lines': 100,
+    },
+    10: {
+        'time': 1.664,
+        'lines': 100,
+    },
+    11: {
+        'time': 1.664,
+        'lines': 100,
+    },
+    12: {
+        'time': 1.664,
+        'lines': 100,
+    }
 }
 
 
 
 current_level = 0
-speed_seconds = speed_dict[current_level] / 20
 line_clear_count = 0
+speed_seconds = speed_dict[current_level]['time'] / 20
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
@@ -252,8 +307,9 @@ while main:
             lastTime = period
         #------------------------------------#
         
-        print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-
+        # print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+        
+        print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
@@ -263,23 +319,25 @@ while main:
 
     board_coords.extend(currentRotation)
     #------------------------------------#
-
+    
+        
 
     #------------ Clear Lines ------------#
     y_list = [s[1] for s in board_coords]
     for y in range(0,20):
         if y_list.count(y) == 10:
             line_clear_count += 1
+            if line_clear_count % 2 == 0 and line_clear_count != 0:
+                current_level += 1  
             board_coords = [s for s in board_coords if s[1] != y]
             for s in board_coords:
                 if s[1] < y:
                     s[1] += 1
     #------------------------------------#
-
+    speed_seconds = speed_dict[current_level]['time'] / 20
 
 
 print_board(currentRotation + board_coords, board, ghost_coords)
 print(currentRotation)
 print(x,y)
 print(width + 1, height + 1)
-
