@@ -230,7 +230,7 @@ def on_press(key):
                 for rot in currentShape:
                     for xy in rot:
                         xy[0] += 1
-        down_cond = y < 19 - height and collisions == 0            
+        down_cond = y   < 19  - height  and collisions == 0            
         if k == 'down' and down_cond:
                 for coord in currentRotation:
                     if [coord[0],coord[1] + 1] in board_coords:
@@ -251,21 +251,7 @@ def on_press(key):
 
             width = max(currentRotation, key=lambda xa: xa[0])[0] - x
             height = max(currentRotation, key=lambda ya: ya[1])[1] - y
-#get lowest y in board_coords of all x_coords of current rotation
-#get lowest y of those y_coords
-#set y of current rotation to that y_coord - height of current rotation
-        if k == 'space':
-            if board_coords != []:
-                totList = []
-                for (a, b) in currentRotation:
-                    bList = []
-                    for (c, d) in board_coords:
-                        if a == c:
-                            bList.append(d)
-                    totList.append(min(bList))
-                y = min(totList) - height
-            else:
-                pass
+            
         print_board(currentRotation + board_coords, board, ghost_coords)
 
 #------------------------------ Main ------------------------------#
