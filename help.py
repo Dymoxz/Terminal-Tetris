@@ -254,6 +254,13 @@ def on_press(key):
             
         print_board(currentRotation + board_coords, board, ghost_coords)
 
+def print_stats(a):
+    if a == 1:
+        print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+    elif a == 2:
+        print(f'x: {x}  |   y: {y}   |   width: {width}   |   height: {height}', end='\r')
+    elif a == 3:
+        print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
 #------------------------------ Main ------------------------------#
 
 
@@ -294,6 +301,7 @@ while main:
 
         #------------ Every x seconds ------------#
         if period.second % 1 == 0 and (period - lastTime).total_seconds() >= speed_seconds:
+
             collisions = 0
             for coord in currentRotation:
                 if [coord[0],coord[1] + 1] in board_coords:
@@ -307,10 +315,8 @@ while main:
             print_board(currentRotation + board_coords, board, ghost_coords)
             lastTime = period
         #------------------------------------#
-        
-        #print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
-        print(f'x: {x}  |   y: {y}   |   width: {width}   |   height: {height}', end='\r')
-        #print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
+
+        print_stats(1)
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
@@ -318,7 +324,18 @@ while main:
 
         time.sleep(max(1./framelimit - (time.time() - start), 0))
 
-    board_coords.extend(currentRotation)
+
+    #------------ When Piece Hits Bottom ------------#
+    Placed = False
+    while not Placed:
+        aaaasd = datetime.datetime.now()
+        if aaaasd.second % 1 == 0 and (aaaasd - lastTime).total_seconds() >= .5:
+            board_coords.extend(currentRotation)
+            lastTime = aaaasd
+            count += 1
+            Placed = True
+        print_stats(1)
+        print_board(currentRotation + board_coords, board, ghost_coords)
     #------------------------------------#
     
         
@@ -328,7 +345,7 @@ while main:
     for y in range(0,20):
         if y_list.count(y) == 10:
             line_clear_count += 1
-            if line_clear_count % 2 == 0 and line_clear_count != 0:
+            if line_clear_count % 10 == 0 and line_clear_count != 0:
                 current_level += 1  
             board_coords = [s for s in board_coords if s[1] != y]
             for s in board_coords:
