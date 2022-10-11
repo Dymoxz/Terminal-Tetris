@@ -1,5 +1,4 @@
 from os import system
-import sys
 import os
 import random
 import time
@@ -63,7 +62,7 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
-framelimit = 60
+framelimit = 30
 
 #------------ Speed & Levels ------------#
 speed_dict = {
@@ -292,7 +291,7 @@ while main:
             lastTime = period
         #-------------- Time -----------------#
 
-        print_stats(3)
+        print_stats(1)
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
@@ -311,7 +310,7 @@ while main:
             Placed = True
     #----------------- Print the board and statistics ------------------------#
     
-        print_stats(3)
+        print_stats(1)
         print_board(currentRotation + board_coords, board, ghost_coords)
     #------------------------------------#
     
