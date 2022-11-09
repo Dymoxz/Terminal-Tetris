@@ -8,7 +8,7 @@ import copy
 #------------------------------ Initialization ------------------------------#
 
 
-#------------ Shapes & Colours ------------#
+#------------ Shapes ------------#
 S = [[[1,0],[2,0],[0,1],[1,1]],
     [[1,0],[1,1],[2,1],[2,2]],
     [[0,2],[1,1],[1,2],[2,1]],
@@ -43,11 +43,13 @@ T = [[[0,1],[1,0],[1,1],[2,1]],
     [[1,0],[1,1],[1,2],[2,1]],
     [[0,1],[1,1],[1,2],[2,1]],
     [[1,0],[0,1],[1,1],[1,2]]]
+#---------------------------------#
 
 #------------ Visuals ------------#
 background = '.'
 shapeIcon = '⯀'
 ghostPiece = '□'
+pieceColor = 63, 127, 176
 #---------------------------------#
 
 board = [background*10]*20
@@ -62,7 +64,7 @@ start_time = time.time()
 lastTime = datetime.datetime.now()
 time_lapsed = 0.00000000000000000000000000000000000000000000001
 count = 0
-framelimit = 30
+framelimit = 60
 
 #------------ Speed & Levels ------------#
 speed_dict = {
@@ -151,7 +153,7 @@ def print_board(shape_coords, boarding, ghost):
     for y in local_board:
         for x in y:
             if x == shapeIcon:
-                print(get_color_escape(63, 127, 176) + x + RESET + ' ', end='')
+                print(get_color_escape(*pieceColor) + x + RESET + ' ', end='')
             elif x == ghostPiece:
                 print(get_color_escape(80, 80, 80) + x + RESET + ' ', end='')
             else:
@@ -274,6 +276,16 @@ while main:
         start = time.time()
         period = datetime.datetime.now()
 
+
+        # #------------ Ghost ------------#
+        # ghost_coords = []
+        # dif_list = []
+        # for coord in currentRotation:
+        #     max_at_x = max([i[1] for i in board_coords if i[0] == coord[0]])
+        #     dif_list.append(coord[1])
+
+
+
         #------------ Every x seconds ------------#
         if period.second % 1 == 0 and (period - lastTime).total_seconds() >= speed_seconds:
 
@@ -300,20 +312,24 @@ while main:
         time.sleep(max(1./framelimit - (time.time() - start), 0))
 
     #------------ When Piece Hits Bottom ------------#
-    Placed = False
-    while not Placed:
-        timeAtBottom = datetime.datetime.now()
-        if timeAtBottom.second % 1 == 0 and (timeAtBottom - lastTime).total_seconds() >= .5:
-            board_coords.extend(currentRotation)
-            lastTime = timeAtBottom
-            count += 1
-            Placed = True
+    # Placed = False
+    # while not Placed:
+    #     timeAtBottom = datetime.datetime.now()
+    #     if timeAtBottom.second % 1 == 0 and (timeAtBottom - lastTime).total_seconds() >= .5:
+    #         board_coords.extend(currentRotation)
+    #         lastTime = timeAtBottom
+    #         count += 1
+    #         Placed = True
+
     #----------------- Print the board and statistics ------------------------#
     
-        print_stats(1)
-        print_board(currentRotation + board_coords, board, ghost_coords)
+    #     print_stats(1)
+    #     print_board(currentRotation + board_coords, board, ghost_coords)
     #------------------------------------#
-    
+
+
+    board_coords.extend(currentRotation)
+    count += 1
         
 
     #------------ Clear Lines ------------#
