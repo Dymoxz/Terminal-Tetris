@@ -54,7 +54,7 @@ pieceColor = 63, 127, 176
 
 board = [background*10]*20
 RESET = '\033[0m'
-main = True
+main = False
 board_coords = []
 ghost_coords = []
 
@@ -122,8 +122,17 @@ speed_dict = {
     }
 }
 
+score_dict = {
+    1: 40,
+    2: 100,
+    3: 500,
+    4: 800,
+}
+
 current_level = 0
 line_clear_count = 0
+score = 0
+Lino = [] 
 speed_seconds = speed_dict[current_level]['time'] / 20
 #-------------------------------#
 
@@ -143,10 +152,6 @@ def print_board(shape_coords, boarding, ghost):
         llist[xy[0]] = shapeIcon
         local_board[xy[1]] = ''.join(llist)
     
-    # for xb in ghost:
-    #     llist = list(local_board[xb[1]])
-    #     llist[xb[0]] = ghostPiece
-    #     local_board[xb[1]] = ''.join(llist)
     
 
     clear()
@@ -183,12 +188,13 @@ def on_press(key):
     #exit game
     if key == keyboard.Key.esc:
         return False  # stop listener
+    if key == keyboard.Key.enter and not main:
+        main = True
     try:
         k = key.char  # single-char keys
     except:
         k = key.name  # other keys
-    
-    if k in ['left', 'right', 'down', 'up', 'space']:
+    if k in ['left', 'right', 'down', 'up'] and main:
         left_cond = x > 0 and side_collisions == 0
         if k == 'left' and left_cond:
             for coord in currentRotation:
@@ -236,7 +242,7 @@ def on_press(key):
 
 def print_stats(a):
     if a == 1:
-        print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.', end='\r')
+        print(f'FPS: {round(count/time_lapsed, 2)}   |   Frames: {count}   |   Time: {round(time_lapsed, 3)} Sec.                       {score}', end='\r')
     elif a == 2:
         print(f'x: {x}  |   y: {y}   |   width: {width}   |   height: {height}', end='\r')
     elif a == 3:
@@ -245,6 +251,25 @@ def print_stats(a):
 
 listener = keyboard.Listener(on_press=on_press)
 listener.start() 
+
+print('''
+IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII 
+IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII
+   III      III            III      III   III   III   III
+   III      III            III      III   III   III   III
+   HHH      HHHHHH         HHH      HHHHHH      III   HHHHHHHHH
+   HHH      HHHHHH         HHH      HHHHHH      III   HHHHHHHHH
+   HHH      HHH            HHH      HHH   HHH   III         HHH
+   HHH      HHH            HHH      HHH   HHH   III         HHH
+   HHH      HHHHHHHHH      HHH      HHH   HHH   III   HHHHHHHHH
+   HHH      HHHHHHHHH      HHH      HHH   HHH   III   HHHHHHHHH
+
+
+                    PRESS ENTER TO START
+''')
+
+while not main:
+    pass
 
 while main:
     #randomly choose a shape from the list and set currentRotation to the first rotation
@@ -270,21 +295,11 @@ while main:
 
     print_board(currentRotation + board_coords, board, ghost_coords)
     collisions = 0
-
+    
     #------------ Every Piece ------------#
     while y < 20 - height - 1 and collisions == 0:
         start = time.time()
         period = datetime.datetime.now()
-
-
-        # #------------ Ghost ------------#
-        # ghost_coords = []
-        # dif_list = []
-        # for coord in currentRotation:
-        #     max_at_x = max([i[1] for i in board_coords if i[0] == coord[0]])
-        #     dif_list.append(coord[1])
-
-
 
         #------------ Every x seconds ------------#
         if period.second % 1 == 0 and (period - lastTime).total_seconds() >= speed_seconds:
@@ -298,7 +313,10 @@ while main:
                 for rot in currentShape:
                     for coord in rot:
                         coord[1] += 1
-            
+            if collisions > 0 and y == 0:
+                main = False
+                break
+    
             print_board(currentRotation + board_coords, board, ghost_coords)
             lastTime = period
         #-------------- Time -----------------#
@@ -311,31 +329,16 @@ while main:
 
         time.sleep(max(1./framelimit - (time.time() - start), 0))
 
-    #------------ When Piece Hits Bottom ------------#
-    # Placed = False
-    # while not Placed:
-    #     timeAtBottom = datetime.datetime.now()
-    #     if timeAtBottom.second % 1 == 0 and (timeAtBottom - lastTime).total_seconds() >= .5:
-    #         board_coords.extend(currentRotation)
-    #         lastTime = timeAtBottom
-    #         count += 1
-    #         Placed = True
-
-    #----------------- Print the board and statistics ------------------------#
-    
-    #     print_stats(1)
-    #     print_board(currentRotation + board_coords, board, ghost_coords)
-    #------------------------------------#
-
-
     board_coords.extend(currentRotation)
     count += 1
         
 
     #------------ Clear Lines ------------#
     y_list = [s[1] for s in board_coords]
+    curLines = 0
     for y in range(0,20):
         if y_list.count(y) == 10:
+            curLines += 1
             line_clear_count += 1
             if line_clear_count % speed_dict[current_level]['lines'] == 0 and line_clear_count != 0:
                 current_level += 1  
@@ -343,12 +346,33 @@ while main:
             for s in board_coords:
                 if s[1] < y:
                     s[1] += 1
+    Lino.append(curLines)
+    if curLines > 0:
+        score += score_dict[curLines] * (current_level + 1)
     #------------------------------------#
     
     speed_seconds = speed_dict[current_level]['time'] / 20
 
 
-print_board(currentRotation + board_coords, board, ghost_coords)
-print_stats(1)
-print_stats(2)
-print_stats(3)
+
+# ------------------ End Game ------------------ #
+clear()
+
+print('''                                
+   ____    _    __  __ _____    _____     _______ ____  
+  / ___|  / \  |  \/  | ____|  / _ \ \   / / ____|  _ \ 
+ | |  _  / _ \ | |\/| |  _|   | | | \ \ / /|  _| | |_) |
+ | |_| |/ ___ \| |  | | |___  | |_| |\ V / | |___|  _ < 
+  \____/_/   \_\_|  |_|_____|  \___/  \_/  |_____|_| \_\
+              
+''')
+
+print(f'''
+-------------------STATS-------------------
+---    Score:  {score}             
+---    Time:  {round(time_lapsed, 3)}                         
+---    Level:  {current_level + 1}
+---    Lines:  {line_clear_count}
+-------------------------------------------
+''')
+# ---------------------------------------------- #
