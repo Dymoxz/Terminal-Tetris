@@ -136,8 +136,6 @@ Lino = []
 speed_seconds = speed_dict[current_level]['time'] / 20
 #-------------------------------#
 
-
-
 #------------------------------ Functions ------------------------------#
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
@@ -246,7 +244,7 @@ def print_stats(a):
     elif a == 2:
         print(f'x: {x}  |   y: {y}   |   width: {width}   |   height: {height}', end='\r')
     elif a == 3:
-        print(f'Speed: {speed_seconds}   |   Level: {current_level}   |   Lines: {line_clear_count}', end='\r')
+        print(f'Score: {score}   -   Level: {current_level}   -   Lines: {line_clear_count}', end='\r')
 #------------------------------ Main ------------------------------#
 
 listener = keyboard.Listener(on_press=on_press)
@@ -257,12 +255,12 @@ IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII
 IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII
    III      III            III      III   III   III   III
    III      III            III      III   III   III   III
-   HHH      HHHHHH         HHH      HHHHHH      III   HHHHHHHHH
-   HHH      HHHHHH         HHH      HHHHHH      III   HHHHHHHHH
-   HHH      HHH            HHH      HHH   HHH   III         HHH
-   HHH      HHH            HHH      HHH   HHH   III         HHH
-   HHH      HHHHHHHHH      HHH      HHH   HHH   III   HHHHHHHHH
-   HHH      HHHHHHHHH      HHH      HHH   HHH   III   HHHHHHHHH
+   HHH      HHHHHH         HHH      HHHHHH      HHH   HHHHHHHHH
+   HHH      HHHHHH         HHH      HHHHHH      HHH   HHHHHHHHH
+   HHH      HHH            HHH      HHH   HHH   HHH         HHH
+   HHH      HHH            HHH      HHH   HHH   HHH         HHH
+   HHH      HHHHHHHHH      HHH      HHH   HHH   HHH   HHHHHHHHH
+   HHH      HHHHHHHHH      HHH      HHH   HHH   HHH   HHHHHHHHH
 
 
                     PRESS ENTER TO START
@@ -321,7 +319,7 @@ while main:
             lastTime = period
         #-------------- Time -----------------#
 
-        print_stats(1)
+        print_stats(3)
         count += 1
         end_time = time.time()  
         time_lapsed = end_time - start_time
@@ -369,10 +367,10 @@ print('''
 
 print(f'''
 -------------------STATS-------------------
----    Score:  {score}             
----    Time:  {round(time_lapsed, 3)}                         
----    Level:  {current_level + 1}
----    Lines:  {line_clear_count}
+    Score:  {score}             
+    Time:  {round(time_lapsed, 3)}                         
+    Level:  {current_level}
+    Lines:  {line_clear_count}
 -------------------------------------------
 ''')
 # ---------------------------------------------- #
