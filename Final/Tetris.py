@@ -170,7 +170,7 @@ def clear():
     else:
         _ = system('clear')
 
-#
+#tijd
 def time_convert(sec):
     mins = sec // 60
     sec = sec % 60
@@ -249,7 +249,7 @@ def print_stats(a):
 
 listener = keyboard.Listener(on_press=on_press)
 listener.start() 
-
+clear()
 print('''
 IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII 
 IIIIIIIII   IIIIIIIII   IIIIIIIII   IIIIIIIII   III   IIIIIIIII
@@ -355,6 +355,8 @@ while main:
 
 # ------------------ End Game ------------------ #
 clear()
+
+time.sleep(1)
 
 print('''                                
    ____    _    __  __ _____    _____     _______ ____  
